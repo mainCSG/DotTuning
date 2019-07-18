@@ -1,24 +1,24 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import pandas as pd
 import csv
 from curr_thresh_filter import curr_thresh_filter
-from DBSCAN import DBSCAN 
+from DBSCAN import DBSCAN
 from assign_clst_qual import assign_clst_qual
 from assign_clst_centroid import assign_clst_centroid
 from find_clusters import find_clusters
 from matplotlib import cm
 from pandas import DataFrame
-from fit_lines_using_initialpts import fit_lines
-from find_Vgms import find_Vgms
-from find_Ecs import find_Ecs
+# from fit_lines_using_initialpts import fit_lines
+# from find_Vgms import find_Vgms
+# from find_Ecs import find_Ecs
 from find_Cgs import find_Cgs
-from find_Cratios import find_Cratios
-from scipy import ndimage
-from crop import crop
-from fit_lines_4triangles import fit_lines_4triangles
-from find_dVgs import find_dVgs
+# from find_Cratios import find_Cratios
+# from scipy import ndimage
+# from crop import crop
+# from fit_lines_4triangles import fit_lines_4triangles
+# from find_dVgs import find_dVgs
 
 # curr_thresh_factor=0.8
 boundary_thickness_factor=1.0
@@ -63,10 +63,10 @@ def Cal_Cgs(X,Y,Z,curr_thresh_factor,resolution):
 	# plt.show()
 
 	# Cluster the dataset `D` using the DBSCAN algorithm.
-	    
+
 	# DBSCAN takes a dataset `D` (a list of vectors), a threshold distance
 	# `eps`, and a required number of points `MinPts`.
-	    
+
 	# It will return a list of cluster labels. The label -1 means noise, and then
 	# the clusters are numbered starting from 1.
 
@@ -85,7 +85,7 @@ def Cal_Cgs(X,Y,Z,curr_thresh_factor,resolution):
 	cluster_quality= assign_clst_qual(cluster_labels,curr_filtered_1d)
 
 	#find centroids of clusters to give it a coordinate
-	cluster_centroids= assign_clst_centroid(cluster_labels,curr_filtered_coord) 
+	cluster_centroids= assign_clst_centroid(cluster_labels,curr_filtered_coord)
 
 	#if there are only 4 clusters then they make the final clusters, else find the best 4
 	if len(cluster_centroids)==5: #it has one dummy index so 4+1
@@ -95,10 +95,10 @@ def Cal_Cgs(X,Y,Z,curr_thresh_factor,resolution):
 		dist_labelled=[(0,0.0)]
 		for s in range(1,5):	#start from 1 because it 0 is dummy cluster
 			#put in the labels of remaining clusters (other than the base cluster) and their distances to the base
-			if s!=base: 
+			if s!=base:
 				dist_labelled+=[(s, dist(cluster_centroids[s],cluster_centroids[base]))]
 		dist_labelled = np.array(dist_labelled[1:], dtype=dtype)
-		dist_labelled=np.sort(dist_labelled,order='distance')	
+		dist_labelled=np.sort(dist_labelled,order='distance')
 		#put these into the final_clusters
 		final_clusters=[base,dist_labelled[0][0],dist_labelled[1][0],dist_labelled[2][0]]
 	else:
@@ -117,10 +117,10 @@ def Cal_Cgs(X,Y,Z,curr_thresh_factor,resolution):
 		if cluster_labels[r]==final_clusters[1]:	#base clusters' neighbours
 			x[1]=x[1]+[curr_filtered_coord_x[r]]
 			y[1]=y[1]+[curr_filtered_coord_y[r]]
-		if cluster_labels[r]==final_clusters[2]:	
+		if cluster_labels[r]==final_clusters[2]:
 			x[2]=x[2]+[curr_filtered_coord_x[r]]
 			y[2]=y[2]+[curr_filtered_coord_y[r]]
-		if cluster_labels[r]==final_clusters[3]:	
+		if cluster_labels[r]==final_clusters[3]:
 			x[3]=x[3]+[curr_filtered_coord_x[r]]
 			y[3]=y[3]+[curr_filtered_coord_y[r]]
 	# #put all the points of the clusters into excel sheet
@@ -144,46 +144,3 @@ def Cal_Cgs(X,Y,Z,curr_thresh_factor,resolution):
 	# plt.plot([fit_centroids[0][0],fit_centroids[1][0],fit_centroids[3][0],fit_centroids[2][0],fit_centroids[0][0]],[fit_centroids[0][1],fit_centroids[1][1],fit_centroids[3][1],fit_centroids[2][1],fit_centroids[0][1]],'b--')
 	# plt.show()
 	return C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

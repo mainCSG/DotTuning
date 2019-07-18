@@ -1,21 +1,21 @@
 # it takes 5 vertices as the input along with the cluster. It first finds the boundary points and
 # puts the point into 5 groups based on which edge it is closest to. Then fits a line through these groups
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import pandas as pd
 import csv
 from curr_thresh_filter import curr_thresh_filter
 from matplotlib import cm
-from pandas import DataFrame
+# from pandas import DataFrame
 from find_Vgms import find_Vgms
 from find_Ecs import find_Ecs
-from find_Cgs import find_Cgs
-from find_Cratios import find_Cratios
+# from find_Cgs import find_Cgs
+# from find_Cratios import find_Cratios
 from scipy.optimize import minimize
 from numpy.linalg import inv
 from skimage import feature
-from DBSCAN import DBSCAN
+# from DBSCAN import DBSCAN
 from scipy import ndimage
 from crop import crop
 

@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ from find_Vgms import find_Vgms
 from find_Ecs import find_Ecs
 from find_Cgs import find_Cgs
 from find_Cratios import find_Cratios
-from scipy import ndimage
+# from scipy import ndimage
 from crop import crop
 from fit_lines_4triangles import fit_lines_4triangles
 from find_dVgs import find_dVgs

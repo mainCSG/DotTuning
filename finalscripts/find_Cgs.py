@@ -16,7 +16,7 @@ def order_triangles(centroids):
 	for s in range(1,4):	#start from 1 because it 0 is the triangle  itself
 		dist_labelled+=[(s, distances[s])]
 	dist_labelled = np.array(dist_labelled, dtype=dtype)
-	dist_labelled=np.sort(dist_labelled,order='distance')		
+	dist_labelled=np.sort(dist_labelled,order='distance')
 	#put first these triangles from dist_labelled (sorted in terms of which is closest) into neigh_labels
 	for n in range(0,4):
 		neigh_labels[n]= dist_labelled[n][0]
@@ -26,14 +26,14 @@ def order_triangles(centroids):
 def find_Cgs(centroids):
 	#order the triangles so it easier to locate neighbours
 	neigh_labels= order_triangles(centroids)
-	# calculate delta_Vgs 
+	# calculate delta_Vgs
 	#delta_Vgs from the first triangle. neigh_label[1] and [2] has indices of its neighbours
 	x=np.array([centroids[0][0]-centroids[int(neigh_labels[1])][0],centroids[0][0]-centroids[int(neigh_labels[2])][0]])
 	y=np.array([centroids[0][1]-centroids[int(neigh_labels[1])][1],centroids[0][1]-centroids[int(neigh_labels[2])][1]])
 	delta_Vg1_1= max(abs(centroids[0][0]-centroids[int(neigh_labels[1])][0]),abs(centroids[0][0]-centroids[int(neigh_labels[2])][0]))
 	delta_Vg2_1= max(abs(centroids[0][1]-centroids[int(neigh_labels[1])][1]),abs(centroids[0][1]-centroids[int(neigh_labels[2])][1]))
 
-	#delta_Vgs from diagonally opposite triangle. 
+	#delta_Vgs from diagonally opposite triangle.
 	delta_Vg1_2= max(abs(centroids[int(neigh_labels[3])][0]-centroids[int(neigh_labels[1])][0]),abs(centroids[int(neigh_labels[3])][0]-centroids[int(neigh_labels[2])][0]))
 	delta_Vg2_2= max(abs(centroids[int(neigh_labels[3])][1]-centroids[int(neigh_labels[1])][1]),abs(centroids[int(neigh_labels[3])][1]-centroids[int(neigh_labels[2])][1]))
 
@@ -46,13 +46,18 @@ def find_Cgs(centroids):
 	delta_Vgc1_1= min(abs(centroids[0][0]-centroids[int(neigh_labels[1])][0]),abs(centroids[0][0]-centroids[int(neigh_labels[2])][0]))
 	delta_Vgc2_1= min(abs(centroids[0][1]-centroids[int(neigh_labels[1])][1]),abs(centroids[0][1]-centroids[int(neigh_labels[2])][1]))
 
-	#delta_Vgcs from diagonally opposite triangle. 
+	#delta_Vgcs from diagonally opposite triangle.
 	delta_Vgc1_2= min(abs(centroids[int(neigh_labels[3])][0]-centroids[int(neigh_labels[1])][0]),abs(centroids[int(neigh_labels[3])][0]-centroids[int(neigh_labels[2])][0]))
 	delta_Vgc2_2= min(abs(centroids[int(neigh_labels[3])][1]-centroids[int(neigh_labels[1])][1]),abs(centroids[int(neigh_labels[3])][1]-centroids[int(neigh_labels[2])][1]))
 
 	#take average of the delta_Vgs
 	delta_Vgc1= 0.5*(delta_Vgc1_1+delta_Vgc1_2)
 	delta_Vgc2= 0.5*(delta_Vgc2_1+delta_Vgc2_2)
+
+	print('delta_Vg1: {0}'.format(delta_Vg1))
+	print('delta_Vg2: {0}'.format(delta_Vg2))
+	print('delta_Vgc1: {0}'.format(delta_Vgc1))
+	print('delta_Vgc2: {0}'.format(delta_Vgc2))
 
 	#calculate gate capacitances from delta_Vgs
 	#the denominator
@@ -72,33 +77,3 @@ def find_Cgs(centroids):
 
 # #check if code works
 # print(find_Cg_coarse([[0,1],[2,0],[2,1],[0,2]]))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

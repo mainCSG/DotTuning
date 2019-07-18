@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm,ticker
 import numpy as np
 
@@ -39,13 +39,3 @@ def crop(X,Y,Z):
 			if check_side(vert[0],vert[1],centroid,[X[r][s],Y[r][s]])==1 and check_side(vert[2],vert[1],centroid,[X[r][s],Y[r][s]])==1 and check_side(vert[2],vert[3],centroid,[X[r][s],Y[r][s]])==1 and check_side(vert[0],vert[3],centroid,[X[r][s],Y[r][s]])==1:
 				Z_cropped[r][s]= Z[r][s]
 	return Z_cropped
-
-
-
-
-
-
-
-
-
-

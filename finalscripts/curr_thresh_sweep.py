@@ -1,7 +1,7 @@
 #sweeps the current thresh factor over a range of values and plots the gate and cross gate capacitances
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import pandas as pd
 import csv
@@ -46,7 +46,7 @@ VplgR=VplgR[req_data]
 VplgL=VplgL[req_data]
 Current=Current[req_data]
 '''
-#to plot put the data into a 2D grid. 
+#to plot put the data into a 2D grid.
 #set x,y,z according to the data
 # In the measurement when a 2D sweep is done, x is the variable of outer sweep loop. y is the variable of inner sweep loop.
 #find which belongs to outer loop and which is inner loop
@@ -97,7 +97,7 @@ Z=Z- np.tile(offset,(x_dim,y_dim))
 #take absolute of current after removing offset
 Z=abs(Z)
 
-#crop a part of the data. Takes in the four vertices 
+#crop a part of the data. Takes in the four vertices
 Z= crop(X,Y,Z)
 
 resolution=abs(y[0]-y[1])
@@ -163,18 +163,3 @@ print("C_g1_d1, mean=", np.mean(C_g1_d1),",std_dev=",np.std(C_g1_d1,ddof=1))
 print("C_g2_d2, mean=", np.mean(C_g2_d2),",std_dev=",np.std(C_g2_d2,ddof=1))
 print("C_g1_d2, mean=", np.mean(C_g1_d2),",std_dev=",np.std(C_g1_d2,ddof=1))
 print("C_g2_d1, mean=", np.mean(C_g2_d1),",std_dev=",np.std(C_g2_d1,ddof=1))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
