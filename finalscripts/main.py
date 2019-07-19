@@ -24,6 +24,7 @@ from find_dVgs import find_dVgs
 curr_thresh_factor= 0.1
 boundary_thickness_factor=1.0
 data= pd.read_csv('2019-03-12_21-37-12.csv')
+
 #get value of respective columns
 VplgR=data['Vplg_L1 (V)'].values
 VplgL=data['Vplg_L2 (V)'].values
@@ -199,15 +200,17 @@ for r in range(0,len(cluster_labels)):
 	if cluster_labels[r]==final_clusters[3]:
 		x[3]=x[3]+[curr_filtered_coord_x[r]]
 		y[3]=y[3]+[curr_filtered_coord_y[r]]
+
+# TODO: writing to excel not stable yet on lab linux machines
 # #put all the points of the clusters into excel sheet
-df = DataFrame({'x1': x[0], 'y1': y[0]})
-df.to_excel('cluster1.xlsx', sheet_name='sheet1', index=False)
-df = DataFrame({'x2': x[1], 'y2': y[1]})
-df.to_excel('cluster2.xlsx', sheet_name='sheet1', index=False)
-df = DataFrame({'x3': x[2], 'y3': y[2]})
-df.to_excel('cluster3.xlsx', sheet_name='sheet1', index=False)
-df = DataFrame({'x4': x[3], 'y4': y[3]})
-df.to_excel('cluster4.xlsx', sheet_name='sheet1', index=False)
+# df = DataFrame({'x1': x[0], 'y1': y[0]})
+# df.to_excel('cluster1.xlsx', sheet_name='sheet1', index=False)
+# df = DataFrame({'x2': x[1], 'y2': y[1]})
+# df.to_excel('cluster2.xlsx', sheet_name='sheet1', index=False)
+# df = DataFrame({'x3': x[2], 'y3': y[2]})
+# df.to_excel('cluster3.xlsx', sheet_name='sheet1', index=False)
+# df = DataFrame({'x4': x[3], 'y4': y[3]})
+# df.to_excel('cluster4.xlsx', sheet_name='sheet1', index=False)
 
 #use the centroids for a coarse fit. Gives values of gate and cross gate capacitances
 C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1,fit_centroids=find_Cgs(cluster_centroids[final_clusters])
