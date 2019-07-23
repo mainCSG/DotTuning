@@ -54,10 +54,10 @@ def find_Cgs(centroids):
 	delta_Vgc1= 0.5*(delta_Vgc1_1+delta_Vgc1_2)
 	delta_Vgc2= 0.5*(delta_Vgc2_1+delta_Vgc2_2)
 
-	print('delta_Vg1: {0}'.format(delta_Vg1))
-	print('delta_Vg2: {0}'.format(delta_Vg2))
-	print('delta_Vgc1: {0}'.format(delta_Vgc1))
-	print('delta_Vgc2: {0}'.format(delta_Vgc2))
+	# print('delta_Vg1: {0}'.format(delta_Vg1))
+	# print('delta_Vg2: {0}'.format(delta_Vg2))
+	# print('delta_Vgc1: {0}'.format(delta_Vgc1))
+	# print('delta_Vgc2: {0}'.format(delta_Vgc2))
 
 	#calculate gate capacitances from delta_Vgs
 	#the denominator
