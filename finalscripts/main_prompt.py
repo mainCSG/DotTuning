@@ -52,9 +52,9 @@ splash += '*********************************************************************
 print(splash)
 
 # Load results, capacitance matrix
-input('Press Enter to load CSV')
+raw_input('Press Enter to load CSV')
 
-# filename = str(input("Capacitance value CSV: "))
+# filename = str(raw_input("Capacitance value CSV: "))
 inputFilename = get_path('*.csv')
 
 print('Fitting: {0}'.format(inputFilename))
@@ -69,9 +69,9 @@ for i,col in enumerate(data.columns):
 
 invalidColumnName = True
 while invalidColumnName:
-    gateName1 = str(input('\nType gate 1 voltage column name: '))
-    gateName2 = str(input('Type gate 2 voltage column name: '))
-    currentName = str(input('Type current column name: '))
+    gateName1 = str(raw_input('\nType gate 1 voltage column name: '))
+    gateName2 = str(raw_input('Type gate 2 voltage column name: '))
+    currentName = str(raw_input('Type current column name: '))
 
     selection = [gateName1, gateName2, currentName]
 
@@ -93,8 +93,8 @@ print(highLabel)
 
 invalidChoice = True
 while invalidChoice:
-    # resChoice = str(input("[low] or [high] or [tri]? "))
-    resChoice = str(input("[low] or [high]? "))
+    # resChoice = str(raw_input("[low] or [high] or [tri]? "))
+    resChoice = str(raw_input("[low] or [high]? "))
 
     if resChoice == 'low' or resChoice == 'high':
         invalidChoice = False
@@ -115,7 +115,7 @@ boundary_thickness_factor=1.0
 print('\nDo you want to change the current threshold factor from its preset of {0}? \n'.format(curr_thresh_factor))
 invalidChoice = True
 while invalidChoice:
-    thresChoice = str(input('[yes] or [no]? '))
+    thresChoice = str(raw_input('[yes] or [no]? '))
 
     if thresChoice == 'yes' or thresChoice == 'no':
         invalidChoice = False
@@ -124,7 +124,7 @@ while invalidChoice:
             while okChoice:
                 okChoice = False
                 try:
-                    newThreshold = float(input("Current threshold factor: "))
+                    newThreshold = float(raw_input("Current threshold factor: "))
                 except ValueError as e:
                     print('Current threshold factor must be a number.\n')
                     okChoice = True
@@ -153,7 +153,7 @@ print('\nDo you want to crop data range by entering min/max values for each gate
 
 invalidChoice = True
 while invalidChoice:
-    cropChoice = str(input("[yes] or [no]? "))
+    cropChoice = str(raw_input("[yes] or [no]? "))
 
     if cropChoice == 'yes' or cropChoice == 'no':
         invalidChoice = False
@@ -169,12 +169,12 @@ if cropValues:
     invalidCrop = True
     while invalidCrop:
         print('\nEnter intended crop for Vg1 (x-axis):')
-        initial1 = input("Min: ")
-        final1 = input("Max: ")
+        initial1 = raw_input("Min: ")
+        final1 = raw_input("Max: ")
 
         print('\nEnter intended crop for Vg2 (y-axis):')
-        initial2 = input("Min: ")
-        final2 = input("Max: ")
+        initial2 = raw_input("Min: ")
+        final2 = raw_input("Max: ")
 
         invalidCrop = False
         try:
@@ -265,7 +265,7 @@ print('\nDo you want to further crop by selecting vertices on plot?\n')
 
 invalidChoice = True
 while invalidChoice:
-    cropChoice = str(input("[yes] or [no]? "))
+    cropChoice = str(raw_input("[yes] or [no]? "))
 
     if cropChoice == 'yes' or cropChoice == 'no':
         invalidChoice = False
@@ -418,7 +418,7 @@ if triangleFitting:
     print('\nDo you want to change the boundary thickness factor from its preset of {0}? \n'.format(boundary_thickness_factor))
     invalidChoice = True
     while invalidChoice:
-        boundaryChoice = str(input('[yes] or [no]? '))
+        boundaryChoice = str(raw_input('[yes] or [no]? '))
 
         if boundaryChoice == 'yes' or boundaryChoice == 'no':
             invalidChoice = False
@@ -427,7 +427,7 @@ if triangleFitting:
                 while okChoice:
                     okChoice = False
                     try:
-                        newBoundary = float(input('Boundary thickness factor: '))
+                        newBoundary = float(raw_input('Boundary thickness factor: '))
                     except ValueError as e:
                         print('Boundary thickness factor must be a number.\n')
                         okChoice = True
@@ -484,7 +484,7 @@ if triangleFitting:
     print("Ec1,Ec2,Ecm are",Ec1,Ec2,Ecm)
     """
     # Write csv of all terms
-    input('Press enter to save capacitances to CSV')
+    raw_input('Press enter to save capacitances to CSV')
 
     outputFilename = get_save_path('*.csv')
 
@@ -497,7 +497,7 @@ if triangleFitting:
 
 else:
     # Write csv of only gate capacitance
-    input('Press enter to save capacitances to CSV')
+    raw_input('Press enter to save capacitances to CSV')
 
     outputFilename = get_save_path('*.csv')
 

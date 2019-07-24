@@ -85,7 +85,7 @@ def Cal_Cgs(X,Y,Z,curr_thresh_factor,resolution):
 	cluster_quality= assign_clst_qual(cluster_labels,curr_filtered_1d)
 
 	#find centroids of clusters to give it a coordinate
-	cluster_centroids= assign_clst_centroid(cluster_labels,curr_filtered_coord)
+	cluster_centroids= assign_clst_centroid(cluster_labels,curr_filtered_coord,curr_filtered_1d)
 
 	#if there are only 4 clusters then they make the final clusters, else find the best 4
 	if len(cluster_centroids)==5: #it has one dummy index so 4+1
