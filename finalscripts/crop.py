@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-# from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm,ticker
 import numpy as np
 
@@ -22,13 +22,32 @@ def crop(X,Y,Z):
 	   	point= [x[ind][0],y[ind][0]]
 	   	print(point)
 	   	vertices= vertices+[point]
+	   	coll._facecolors[event.ind[0:5],:] = (1,0,0,1)
+	   	fig.canvas.draw()
 
-	#ask for 4 vertices
-	print("choose 4 vertices of cropped out data and close the graph")
-	fig = plt.figure()
-	plt.scatter(x,y,c=z,picker=5)
-	fig.canvas.mpl_connect('pick_event', onpick)
-	plt.show()
+	repeat=True
+	while repeat:
+		#ask for 4 vertices
+		print("choose 4 vertices to crop data and close the graph")
+		fig = plt.figure()
+		coll=plt.scatter(x,y,c=z,picker=0.1)
+		fig.canvas.mpl_connect('pick_event', onpick)
+		plt.show()
+
+		print('\nDo you want to proceed?\n')
+
+		invalidChoice = True
+		while invalidChoice:
+		    Choice = str(raw_input("[yes] or [no]? "))
+
+		    if Choice == 'yes' or Choice == 'no':
+		        invalidChoice = False
+		        if Choice == 'yes':
+		            repeat = False
+		        else:
+		            repeat = True
+		    else:
+		        print('Invalid entry. Try again.')
 
 	Z_cropped= np.zeros((Z.shape[0],Z.shape[1]))
 	vert=np.array(vertices)

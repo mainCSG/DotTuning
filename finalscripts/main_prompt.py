@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import wx
 import csv
+import sys
 from curr_thresh_filter import curr_thresh_filter
 from DBSCAN import DBSCAN
 from assign_clst_qual import assign_clst_qual
@@ -45,6 +46,12 @@ def get_save_path(wildcard):
     dialog.Destroy()
     return path
 
+# python 2 v 3 compatibility
+def open_csv(filename, mode='r'):
+    """Open a csv file in proper mode depending on Python verion."""
+    return(open(filename, mode=mode+'b') if sys.version_info[0] == 2 else
+           open(filename, mode=mode, newline=''))
+
 # Splash
 splash = '*******************************************************************************\n'
 splash += 'Charge Stability Diagram Fitting Script\n'
@@ -65,21 +72,77 @@ print('\nFrom the CSV\'s headers please type which correspond to the gate voltag
 columnNames = data.columns
 
 for i,col in enumerate(data.columns):
-    print(col)
+    print('{0} : {1}'.format(i,col))
 
 invalidColumnName = True
 while invalidColumnName:
-    gateName1 = str(raw_input('\nType gate 1 voltage column name: '))
-    gateName2 = str(raw_input('Type gate 2 voltage column name: '))
-    currentName = str(raw_input('Type current column name: '))
+    # gateName1 = str(raw_input('\nType gate 1 voltage column name: '))
+    # gateName2 = str(raw_input('Type gate 2 voltage column name: '))
+    # currentName = str(raw_input('Type current column name: '))
 
-    selection = [gateName1, gateName2, currentName]
+    validNumbers = True
+    try:
+        gateName1Num = int(raw_input('\nType gate 1 voltage column number: '))
+        gateName2Num = int(raw_input('Type gate 2 voltage column number: '))
+        currentNameNum = int(raw_input('Type current column number: '))
+    except ValueError as e:
+        print('Non number entered.')
+        validNumbers = False
 
-    if len(set(selection) & set(columnNames)) == 3:
-        invalidColumnName = False
+    if validNumbers and max(gateName1Num,gateName2Num,currentNameNum) < len(data.columns):
+        gateName1 = data.columns[gateName1Num]
+        gateName2 = data.columns[gateName2Num]
+        currentName = data.columns[currentNameNum]
+
+        selection = [gateName1, gateName2, currentName]
+
+        if len(set(selection) & set(columnNames)) == 3:
+            invalidColumnName = False
+        else:
+            diffNames = set(selection).difference(set(columnNames))
+            print('Invalid column name(s) entered: {0}'.format(diffNames))
+    else:
+        print('Invalid selection, Try again.')
+
+# Get data from column names
+VplgR=data[gateName1].values
+VplgL=data[gateName2].values
+Current=data[currentName].values
+
+print('\n How many outer loops were swept?')
+outer_loops=int(raw_input("Enter a number:"))
+outer_loop_indices=np.zeros(outer_loops)
+outer_loop_values=np.zeros(outer_loops)
+
+outerLoopCheck = True
+if outer_loops==0:
+    outerLoopCheck= False
+while outerLoopCheck:
+    outer_loop_indices[0]=int(raw_input("Enter an outer loop column number:"))
+    print(np.unique(data[data.columns[outer_loop_indices[0]]].values))
+    outer_loop_values[0]=float(raw_input("Choose a value:"))
+
+    for a in range (1,outer_loops):
+        outer_loop_indices[a]=int(raw_input("Enter next outer loop column number:"))
+        print(np.unique(data[data.columns[outer_loop_indices[a]]].values))
+        outer_loop_values[a]=float(raw_input("Choose a value:"))
+
+    selection = [data.columns[int(outer_loop_indices)]]
+
+    if len(set(selection) & set(columnNames)) == outer_loops:
+        outerLoopCheck = False
     else:
         diffNames = set(selection).difference(set(columnNames))
         print('Invalid column name(s) entered: {0}'.format(diffNames))
+
+#filter out data based on the values for outerloops set
+req_data=np.arange(len(Current))
+for b in range(0,outer_loops):
+    data_loop=np.argwhere(data[data.columns[outer_loop_indices[b]]].values==outer_loop_values[b])
+    req_data=np.intersect1d(req_data,np.reshape(data_loop,len(data_loop)),assume_unique=True)
+VplgR=VplgR[req_data]
+VplgL=VplgL[req_data]
+Current=Current[req_data]
 
 print('\nDo you have low resolution or high resolution data?')
 
@@ -133,20 +196,6 @@ while invalidChoice:
             print('Current threshold factor: {0}'.format(curr_thresh_factor))
     else:
         print('Invalid entry. Try again.')
-
-
-# #get value of respective columns
-# VplgR=data['Vplg_L1 (V)'].values
-# VplgL=data['Vplg_L2 (V)'].values
-# Current=data['Current (V)'].values
-
-# VplgR=data['VplgR (V)'].values
-# VplgL=data['VplgL (V)'].values
-# Current=data['Current (V)'].values
-
-VplgR=data[gateName1].values
-VplgL=data[gateName2].values
-Current=data[currentName].values
 
 
 print('\nDo you want to crop data range by entering min/max values for each gate?\n')
@@ -304,6 +353,7 @@ plt.show()
 #set eps as 2 times resolution of sweep
 resolution=abs(y[0]-y[1])
 eps= 2*(resolution) #y has elements in inner loop
+print('running clustering algorithm DBSCAN')
 cluster_labels= DBSCAN(curr_filtered_coord, eps=eps, MinPts=5)
 
 #plot clusters
@@ -312,6 +362,7 @@ cluster_labels= DBSCAN(curr_filtered_coord, eps=eps, MinPts=5)
 # ax.scatter(curr_filtered_coord_x,curr_filtered_coord_y, cluster_labels)
 # plt.show()
 
+print('Calculating triangle centroids and assigning quality based on current signal')
 #assign a quality value to each cluster. We would like to use a group of 4 clusters that have good signal
 #quality is defined as sum of current values of points in the cluster
 cluster_quality= assign_clst_qual(cluster_labels,curr_filtered_1d)
@@ -319,6 +370,7 @@ cluster_quality= assign_clst_qual(cluster_labels,curr_filtered_1d)
 #find centroids of clusters to give it a coordinate
 cluster_centroids= assign_clst_centroid(cluster_labels,curr_filtered_coord,curr_filtered_1d)
 
+print("\nLocating best triangles")
 #if there are only 4 clusters then they make the final clusters, else find the best 4
 if len(cluster_centroids)==5: #it has one dummy index so 4+1
 	#base cluster is the one with highest quality (i.e current signal). This is the first cluster
@@ -337,7 +389,7 @@ else:
 	#choose a group of 4 clusters for further analysis- returns the final cluster numbers
 	final_clusters= find_clusters(cluster_centroids,cluster_quality)
 
-print("\nThe centroids of the final 4 clusters used: \n",cluster_centroids[final_clusters])
+# print("\nThe centroids of the final 4 clusters used: \n",cluster_centroids[final_clusters])
 
 ##put and x and y coordinates of points in base cluster into x, y separately
 x=[[],[],[],[]]
@@ -373,10 +425,10 @@ C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1,fit_centroids=find_Cgs(cluster_centroids[final_c
 # print("values C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1 are ",C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1)
 
 print('\nExtracted gate capacitance terms: ')
-print('C_g1_d1: {0} F'.format(C_g1_d1))
-print('C_g2_d2: {0} F'.format(C_g2_d2))
-print('C_g1_d2: {0} F'.format(C_g1_d2))
-print('C_g2_d1: {0} F'.format(C_g2_d1))
+print('C_g1_d1: {0:.4e} F'.format(C_g1_d1))
+print('C_g2_d2: {0:.4e} F'.format(C_g2_d2))
+print('C_g1_d2: {0:.4e} F'.format(C_g1_d2))
+print('C_g2_d1: {0:.4e} F'.format(C_g2_d1))
 
 #plot the cluster centroids with the fit
 
@@ -389,6 +441,7 @@ def setup(ax):
     ax.xaxis.set_ticks_position('bottom')
     ax.tick_params(which='major', width=1.00, length=5)
     ax.tick_params(which='minor', width=0.75, length=2.5, labelsize=10)
+    # TODO: are these x and ylims specific to some data file?
     ax.set_xlim(1.57,1.61)
     ax.set_ylim(1.59,1.63)
     ax.patch.set_alpha(0.0)
@@ -406,10 +459,17 @@ ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.005))
 ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x}"))
 '''
 #data for the plot
-plt.contourf(X, Y, Z_initial*1e4, 30, cmap=cm.coolwarm)
+plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
 plt.colorbar()
-plt.plot([cluster_centroids[final_clusters][0][0],cluster_centroids[final_clusters][1][0],cluster_centroids[final_clusters][3][0],cluster_centroids[final_clusters][2][0],cluster_centroids[final_clusters][0][0]],[cluster_centroids[final_clusters][0][1],cluster_centroids[final_clusters][1][1],cluster_centroids[final_clusters][3][1],cluster_centroids[final_clusters][2][1],cluster_centroids[final_clusters][0][1]],'go',markersize=8)
+# plt.plot([cluster_centroids[final_clusters][0][0],cluster_centroids[final_clusters][1][0],cluster_centroids[final_clusters][3][0],cluster_centroids[final_clusters][2][0],cluster_centroids[final_clusters][0][0]],[cluster_centroids[final_clusters][0][1],cluster_centroids[final_clusters][1][1],cluster_centroids[final_clusters][3][1],cluster_centroids[final_clusters][2][1],cluster_centroids[final_clusters][0][1]],'go',markersize=8)
 plt.plot([fit_centroids[0][0],fit_centroids[1][0],fit_centroids[3][0],fit_centroids[2][0],fit_centroids[0][0]],[fit_centroids[0][1],fit_centroids[1][1],fit_centroids[3][1],fit_centroids[2][1],fit_centroids[0][1]],'b--')
+plt.plot([fit_centroids[0][0],fit_centroids[1][0],fit_centroids[3][0],fit_centroids[2][0]],[fit_centroids[0][1],fit_centroids[1][1],fit_centroids[3][1],fit_centroids[2][1]],'bo')
+min_x=min(fit_centroids[0][0],fit_centroids[1][0],fit_centroids[2][0],fit_centroids[3][0])
+max_x=max(fit_centroids[0][0],fit_centroids[1][0],fit_centroids[2][0],fit_centroids[3][0])
+min_y=min(fit_centroids[0][1],fit_centroids[1][1],fit_centroids[2][1],fit_centroids[3][1])
+max_y=max(fit_centroids[0][1],fit_centroids[1][1],fit_centroids[2][1],fit_centroids[3][1])
+sides=(max_x-min_x)*0.5
+plt.axis([min_x-sides,max_x+sides,min_y-sides,max_y+sides])
 plt.show()
 
 # Bias triangle fitting if high resolution selected by user
@@ -437,7 +497,7 @@ if triangleFitting:
         else:
             print('Invalid entry. Try again.')
 
-
+    print('\n fitting triangles')
     #fit triangles to the base cluster- gives 5 vertices and slopes,intercepts of lines.
     Use_clear_bulk=True
     vertices,lines,guess_vertices= fit_lines(x[0],y[0],resolution,boundary_thickness_factor,Use_clear_bulk)
@@ -445,8 +505,11 @@ if triangleFitting:
     plt.figure()
     plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
     plt.plot([vertices[0][0],vertices[1][0],vertices[2][0],vertices[3][0],vertices[4][0],vertices[0][0]],[vertices[0][1],vertices[1][1],vertices[2][1],vertices[3][1],vertices[4][1],vertices[0][1]],'g-')
+    sides=(max(x[0])-min(x[0]))*0.5
+    plt.axis([min(x[0])-sides,max(x[0])+sides,min(y[0])-sides,max(y[0])+sides])
     plt.show()
 
+    """
     #fit_triangles using all 4 clusters
     vertices_4,lines_4,dx1,dy1,dx2,dy2= fit_lines_4triangles(x[0],y[0],x[1],y[1],x[2],y[2],x[3],y[3],cluster_centroids[final_clusters],resolution,boundary_thickness_factor,Use_clear_bulk,guess_vertices)
     plt.figure()
@@ -461,7 +524,7 @@ if triangleFitting:
     y_3=y+np.tile(dy2+dy1,(6,))
     plt.plot(x_3,y_3,'b-',x,y,'b-',x_2,y_2,'b-',x_1,y_1,'b-')
     plt.show()
-
+    """
 
     #Find capacitance ratios C1/Cm and C2/Cm from triangles fit to the base cluster
     #calculate Vgms
@@ -469,11 +532,11 @@ if triangleFitting:
     C1_Cm,C2_Cm= find_Cratios(C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1,delta_Vgm1,delta_Vgm2)
     Cm = 1
     print("\nValues of C1/Cm and C2/Cm are: ")
-    print('C1_Cm: {0}'.format(C1_Cm))
-    print('C2_Cm: {0}'.format(C2_Cm))
+    print('C1_Cm: {0:.4e}'.format(C1_Cm))
+    print('C2_Cm: {0:.4e}'.format(C2_Cm))
 
     #find values of dVg1 and dVg2
-    dVg1,dVg2= find_dVgs(vertices,lines)
+    # dVg1,dVg2= find_dVgs(vertices,lines)
     """
     # use lever arm ,gate and cross gate capacitances, capacitance ratios C1_Cm and C2_Cm and calculates charging energies
     #Ec1 and Ec2 and electrostatic coupling energy Ecm
@@ -488,7 +551,8 @@ if triangleFitting:
 
     outputFilename = get_save_path('*.csv')
 
-    with open(outputFilename, mode='w', newline='') as outputFile:
+    with open_csv(outputFilename, 'w') as outputFile:
+    # with open(outputFilename, mode='w', newline='') as outputFile:
         fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2', 'C1', 'C2', 'Cm'])
@@ -501,7 +565,8 @@ else:
 
     outputFilename = get_save_path('*.csv')
 
-    with open(outputFilename, mode='w', newline='') as outputFile:
+    with open_csv(outputFilename, 'w') as outputFile:
+    # with open(outputFilename, mode='w', newline='') as outputFile:
         fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2'])

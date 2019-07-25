@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import wx
 
+
 # TODO: input() does not work in Python 2
 
 """
@@ -143,19 +144,19 @@ message += 'stability diagram, use the following parameters in the \'Virtual Set
 
 message += 'Virtual Gate 1:\n'
 message += '	name: vg1\n'
-message += '	Initial: {0}\n'.format(virtInitial[0])
-message += '	Final: {0}\n'.format(virtFinal[0])
+message += '	Initial: {0:.4e}\n'.format(virtInitial[0])
+message += '	Final: {0:.4e}\n'.format(virtFinal[0])
 message += '	Order: 1 \n\n'
 
 message += 'Virtual Gate 2:\n'
 message += '	name: vg2\n'
-message += '	Initial: {0}\n'.format(virtInitial[1])
-message += '	Final: {0}\n'.format(virtFinal[1])
+message += '	Initial: {0:.4e}\n'.format(virtInitial[1])
+message += '	Final: {0:.4e}\n'.format(virtFinal[1])
 message += '	Order: 2 \n\n'
 
 message += 'Dependent variable expressions:\n\n'
-message += '	gate1 = {0} \n\n'.format(eqs[0])
-message += '	gate2 = {0} \n\n'.format(eqs[1])
+message += '	gate1 = {0:.4e} \n\n'.format(eqs[0])
+message += '	gate2 = {0:.4e} \n\n'.format(eqs[1])
 message += '*******************************************************************************'
 
 print(message)
