@@ -91,12 +91,15 @@ while invalidColumnName:
 		gateName2 = data.columns[gateName2Num]
 		currentName = data.columns[currentNameNum]
 
-		selection = [gateName1, gateName2, currentName]
+		gateNumbers = {gateName1Num,gateName2Num,currentNameNum}
+		nongateNumbers = set(range(0,len(data.columns))).difference(gateNumbers)
 
-		if len(set(selection) & set(columnNames)) == 3:
+		gateSelection = [gateName1, gateName2, currentName]
+
+		if len(set(gateSelection) & set(columnNames)) == 3:
 			invalidColumnName = False
 		else:
-			diffNames = set(selection).difference(set(columnNames))
+			diffNames = set(gateSelection).difference(set(columnNames))
 			print('Invalid column name(s) entered: {0}'.format(diffNames))
 	else:
 		print('Invalid selection, Try again.')
@@ -107,8 +110,8 @@ VplgL=data[gateName2].values
 Current=data[currentName].values
 
 print('\n How many outer loops were swept?')
-outer_loops=int(raw_input("Enter a number:"))
-outer_loop_indices= [0]*outer_loops
+outer_loops=int(raw_input("Enter a number: "))
+outer_loop_indices = [0]*outer_loops
 outer_loop_values = [0]*outer_loops
 
 
@@ -117,24 +120,46 @@ if outer_loops==0:
 else:
 	invalidOuterName = True
 while invalidOuterName:
-	outer_loop_indices[0]=int(raw_input("Enter an outer loop column number: "))
-	print(np.unique(data[data.columns[outer_loop_indices[0]]].values))
-	outer_loop_values[0]=float(raw_input("Choose a value: "))
+	for a in range(0,outer_loops):
+		invalidValue = True
+		while invalidValue:
+			loopStr = 'first' if a == 0 else 'next'
+			colInt = True
+			colinput = raw_input('Enter {0} outer loop column number: '.format(loopStr))
+			try:
+				outer_loop_indices[a] = int(colinput)
+			except ValueError as e:
+				print('Noninteger entered.')
+				colInt = False
 
-	for a in range (1,outer_loops):
-		outer_loop_indices[a]=int(raw_input("Enter next outer loop column number: "))
-		print(np.unique(data[data.columns[outer_loop_indices[a]]].values))
-		outer_loop_values[a]=float(raw_input("Choose a value: "))
+			if colInt:
+				if outer_loop_indices[a] in nongateNumbers:
+					uniqueVals = np.unique(data[data.columns[outer_loop_indices[a]]].values)
+					print(np.unique(uniqueVals))
+					validFloat = True
+					try:
+						outer_loop_values[a] = float(raw_input("Choose a value: "))
+					except ValueError as e:
+						print('Nonnumber entered.')
+						validFloat = False
+					if validFloat:
+						if outer_loop_values[a] in set(uniqueVals):
+							invalidValue = False
+						else:
+							print('Chosen value not available.')
+				else:
+					print('Selected column already entered for gate/current data or out of range.')
 
 	selection=[]
-	for a in range (0,outer_loops):
+	for a in range(0,outer_loops):
 		selection += [data.columns[outer_loop_indices[a]]]
 
 	if len(set(selection) & set(columnNames)) == outer_loops:
 		invalidOuterName = False
 	else:
-		diffNames = set(selection).difference(set(columnNames))
-		print('Invalid column name(s) entered: {0}'.format(diffNames))
+		# diffNames = set(selection).difference(set(columnNames))
+		# print('Invalid column name(s) entered: {0}'.format(diffNames))
+		print('Repeat outer loop columns selected. Try again.')
 
 #filter out data based on the values for outerloops set
 req_data=np.arange(len(Current))
@@ -505,7 +530,7 @@ if triangleFitting:
 						okChoice = True
 				boundary_thickness_factor = newBoundary
 			else:
-				print('Boundary thickness factor: {0}'.format(curr_thresh_factor))
+				print('Boundary thickness factor: {0}'.format(boundary_thickness_factor))
 		else:
 			print('Invalid entry. Try again.')
 
@@ -558,26 +583,37 @@ if triangleFitting:
 	Ec1,Ec2,Ecm= find_Ecs(lever_arm, dot, C1_Cm,C2_Cm,C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1)
 	print("Ec1,Ec2,Ecm are",Ec1,Ec2,Ecm)
 	"""
-	# Write csv of all terms
-	raw_input('Press enter to save capacitances to CSV')
+	# Write csv of only gate capacitance
+	exit = str(raw_input('Press enter to save capacitances to CSV'))
 
-	outputFilename = get_save_path('*.csv')
+	if exit != 'no':
 
-	with open_csv(outputFilename, 'w') as outputFile:
-		fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		outputFilename = get_save_path('*.csv')
 
-		fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2', 'C1', 'C2', 'Cm'])
-		fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2, C1_Cm, C2_Cm, Cm])
+		if outputFilename == None:
+			print('No csv path provided.')
+
+		else:
+			with open_csv(outputFilename, 'w') as outputFile:
+				fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+				fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2', 'C1', 'C2', 'Cm'])
+				fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2, C1_Cm, C2_Cm, Cm])
 
 
 else:
 	# Write csv of only gate capacitance
-	raw_input('Press enter to save capacitances to CSV')
+	exit = str(raw_input('Press enter to save capacitances to CSV'))
 
-	outputFilename = get_save_path('*.csv')
+	if exit != 'no':
+		outputFilename = get_save_path('*.csv')
 
-	with open_csv(outputFilename, 'w') as outputFile:
-		fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		if outputFilename == None:
+			print('No csv path provided.')
 
-		fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2'])
-		fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2])
+		else:
+			with open_csv(outputFilename, 'w') as outputFile:
+				fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+				fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2'])
+				fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2])
