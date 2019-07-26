@@ -8,14 +8,14 @@ extra scripts)
 
 crop.py
 
-You can choose to uncomment this is in main script if no cropping is required. It takes 4 arbitrary points (inputs given should be adjacent vertices). All data points 
+You can choose to uncomment this is in main script if no cropping is required. It takes 4 arbitrary points (inputs given should be adjacent vertices). All data points
 within this arbitrary quadrilateral are kept, the rest are set to zero.
 
-------------------------------------------- 
+-------------------------------------------
 
 curr_thresh_filter.py
 
-Calculates a threshold for the current and filters out current values above the threshold. Current threshold factor( curr_thresh_factor) can be set in main.py 
+Calculates a threshold for the current and filters out current values above the threshold. Current threshold factor( curr_thresh_factor) can be set in main.py
 to vary this threshold. It simply multiplies the factor to the threshold value calculated.
 
 -------------------------------------------
@@ -62,7 +62,7 @@ Note-If the dataset has fine sweep of only one pair of bias triangles, run this 
 
 fit_lines_4triangles.py
 
-Can run this as an alternate to fit_lines_using_initialpts.py. This fits 4 pairs of bias triangles together instead of just one. Parallel set of lines of the 4 
+Can run this as an alternate to fit_lines_using_initialpts.py. This fits 4 pairs of bias triangles together instead of just one. Parallel set of lines of the 4
 triangles are fit together. Again, rough vertices for one pair of triangles should be given as input in a particular order.
 
 ------------------------------------------
@@ -82,13 +82,13 @@ Calculates C1/Cm and C2/Cm using Vgm1, Vgm2 and the gate and cross gate capacita
 find_Ecs.py
 
 takes lever arm alpha_1 or alpha_2, gate and cross gate capacitances, capacitance ratios C1/Cm and C2/Cm and calculates charging energies
-Ec1 and Ec2 and electrostatic coupling energy Ecm  
+Ec1 and Ec2 and electrostatic coupling energy Ecm
 
 ------------------------------------------
 
 find_dVgs.py
 
-calculates dVg1 and dVg2 from the vertices and lines of the fit triangle(s). These values calculated for 2 different data sets at different 
+calculates dVg1 and dVg2 from the vertices and lines of the fit triangle(s). These values calculated for 2 different data sets at different
 Vbias(source-drain bias) can be used to calculate lever arms.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -111,14 +111,14 @@ curr_thresh_sweep.py
 
 Iterates main_curr_thresh_sweep.py for different current threshold values. Set the range of current threshold factor (that decides range of current threshold
 values) and the number of values to be iterated over in this range through the 'sweep' variable. Different values of gate and cross gate capacitances obtained are
-plotted vs current threshold factor. Mean and standard deviation of these capacitances is calculated. 
+plotted vs current threshold factor. Mean and standard deviation of these capacitances is calculated.
 
 --------------------------------------------
 
 Accumulation_gate_sweep.py
 
 Iterates main_accumulation_gate_sweep.py over the different pairs of accumulation gate values swept over. A fixed current threshold factor (and hence current threshold
-value) is set. The data is analysed for low resolution regime. Values of gate and cross gate capacitances calculated is plotted as a function of accumulation gate 
+value) is set. The data is analyzed for low resolution regime. Values of gate and cross gate capacitances calculated is plotted as a function of accumulation gate
 voltages on a heat map. If an iteration throws an error because the fixed current threshold set is inappropriate, capacitance values for that iteration are set to zero.
 ---------------------------------------------
 
@@ -127,26 +127,3 @@ main_accumulation_gate_sweep.py
 main.py file modified for low resolution data. Run this script through Accumulation_gate_sweep.py
 
 ----------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -25,32 +25,32 @@ from find_dVgs import find_dVgs
 
 # WX menu to open file dialog for csv
 def get_path(wildcard):
-    app = wx.App(None)
-    style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
-    dialog = wx.FileDialog(None, 'Open', wildcard=wildcard, style=style)
-    if dialog.ShowModal() == wx.ID_OK:
-        path = dialog.GetPath()
-    else:
-        path = None
-    dialog.Destroy()
-    return path
+	app = wx.App(None)
+	style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+	dialog = wx.FileDialog(None, 'Open', wildcard=wildcard, style=style)
+	if dialog.ShowModal() == wx.ID_OK:
+		path = dialog.GetPath()
+	else:
+		path = None
+	dialog.Destroy()
+	return path
 
 def get_save_path(wildcard):
-    app = wx.App(None)
-    style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
-    dialog = wx.FileDialog(None, 'Save', wildcard=wildcard, style=style)
-    if dialog.ShowModal() == wx.ID_OK:
-        path = dialog.GetPath()
-    else:
-        path = None
-    dialog.Destroy()
-    return path
+	app = wx.App(None)
+	style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
+	dialog = wx.FileDialog(None, 'Save', wildcard=wildcard, style=style)
+	if dialog.ShowModal() == wx.ID_OK:
+		path = dialog.GetPath()
+	else:
+		path = None
+	dialog.Destroy()
+	return path
 
 # python 2 v 3 compatibility
 def open_csv(filename, mode='r'):
-    """Open a csv file in proper mode depending on Python verion."""
-    return(open(filename, mode=mode+'b') if sys.version_info[0] == 2 else
-           open(filename, mode=mode, newline=''))
+	"""Open a csv file in proper mode depending on Python verion."""
+	return(open(filename, mode=mode+'b') if sys.version_info[0] == 2 else
+		   open(filename, mode=mode, newline=''))
 
 # Splash
 splash = '*******************************************************************************\n'
@@ -72,37 +72,37 @@ print('\nFrom the CSV\'s headers please type which correspond to the gate voltag
 columnNames = data.columns
 
 for i,col in enumerate(data.columns):
-    print('{0} : {1}'.format(i,col))
+	print('{0} : {1}'.format(i,col))
 
 invalidColumnName = True
 while invalidColumnName:
-    # gateName1 = str(raw_input('\nType gate 1 voltage column name: '))
-    # gateName2 = str(raw_input('Type gate 2 voltage column name: '))
-    # currentName = str(raw_input('Type current column name: '))
+	# gateName1 = str(raw_input('\nType gate 1 voltage column name: '))
+	# gateName2 = str(raw_input('Type gate 2 voltage column name: '))
+	# currentName = str(raw_input('Type current column name: '))
 
-    validNumbers = True
-    try:
-        gateName1Num = int(raw_input('\nType gate 1 voltage column number: '))
-        gateName2Num = int(raw_input('Type gate 2 voltage column number: '))
-        currentNameNum = int(raw_input('Type current column number: '))
-    except ValueError as e:
-        print('Non number entered.')
-        validNumbers = False
+	validNumbers = True
+	try:
+		gateName1Num = int(raw_input('\nType gate 1 voltage column number: '))
+		gateName2Num = int(raw_input('Type gate 2 voltage column number: '))
+		currentNameNum = int(raw_input('Type current column number: '))
+	except ValueError as e:
+		print('Non number entered.')
+		validNumbers = False
 
-    if validNumbers and max(gateName1Num,gateName2Num,currentNameNum) < len(data.columns):
-        gateName1 = data.columns[gateName1Num]
-        gateName2 = data.columns[gateName2Num]
-        currentName = data.columns[currentNameNum]
+	if validNumbers and max(gateName1Num,gateName2Num,currentNameNum) < len(data.columns):
+		gateName1 = data.columns[gateName1Num]
+		gateName2 = data.columns[gateName2Num]
+		currentName = data.columns[currentNameNum]
 
-        selection = [gateName1, gateName2, currentName]
+		selection = [gateName1, gateName2, currentName]
 
-        if len(set(selection) & set(columnNames)) == 3:
-            invalidColumnName = False
-        else:
-            diffNames = set(selection).difference(set(columnNames))
-            print('Invalid column name(s) entered: {0}'.format(diffNames))
-    else:
-        print('Invalid selection, Try again.')
+		if len(set(selection) & set(columnNames)) == 3:
+			invalidColumnName = False
+		else:
+			diffNames = set(selection).difference(set(columnNames))
+			print('Invalid column name(s) entered: {0}'.format(diffNames))
+	else:
+		print('Invalid selection, Try again.')
 
 # Get data from column names
 VplgR=data[gateName1].values
@@ -114,32 +114,37 @@ outer_loops=int(raw_input("Enter a number:"))
 outer_loop_indices=np.zeros(outer_loops)
 outer_loop_values=np.zeros(outer_loops)
 
-outerLoopCheck = True
+
 if outer_loops==0:
-    outerLoopCheck= False
-while outerLoopCheck:
-    outer_loop_indices[0]=int(raw_input("Enter an outer loop column number:"))
-    print(np.unique(data[data.columns[outer_loop_indices[0]]].values))
-    outer_loop_values[0]=float(raw_input("Choose a value:"))
+	invalidOuterName= False
+else:
+	invalidOuterName = True
+while invalidOuterName:
+	outer_loop_indices[0]=int(raw_input("Enter an outer loop column number:"))
+	print(np.unique(data[data.columns[outer_loop_indices[0]]].values))
+	outer_loop_values[0]=float(raw_input("Choose a value:"))
 
-    for a in range (1,outer_loops):
-        outer_loop_indices[a]=int(raw_input("Enter next outer loop column number:"))
-        print(np.unique(data[data.columns[outer_loop_indices[a]]].values))
-        outer_loop_values[a]=float(raw_input("Choose a value:"))
+	for a in range (1,outer_loops):
+		outer_loop_indices[a]=int(raw_input("Enter next outer loop column number:"))
+		print(np.unique(data[data.columns[outer_loop_indices[a]]].values))
+		outer_loop_values[a]=float(raw_input("Choose a value:"))
 
-    selection = [data.columns[int(outer_loop_indices)]]
+	outer_loop_indices=outer_loop_indices.astype(int)
+	selection=[]
+	for a in range (0,outer_loops):
+		selection += [data.columns[outer_loop_indices[a]]]
 
-    if len(set(selection) & set(columnNames)) == outer_loops:
-        outerLoopCheck = False
-    else:
-        diffNames = set(selection).difference(set(columnNames))
-        print('Invalid column name(s) entered: {0}'.format(diffNames))
+	if len(set(selection) & set(columnNames)) == outer_loops:
+		invalidOuterName = False
+	else:
+		diffNames = set(selection).difference(set(columnNames))
+		print('Invalid column name(s) entered: {0}'.format(diffNames))
 
 #filter out data based on the values for outerloops set
 req_data=np.arange(len(Current))
 for b in range(0,outer_loops):
-    data_loop=np.argwhere(data[data.columns[outer_loop_indices[b]]].values==outer_loop_values[b])
-    req_data=np.intersect1d(req_data,np.reshape(data_loop,len(data_loop)),assume_unique=True)
+	data_loop=np.argwhere(data[data.columns[outer_loop_indices[b]]].values==outer_loop_values[b])
+	req_data=np.intersect1d(req_data,np.reshape(data_loop,len(data_loop)),assume_unique=True)
 VplgR=VplgR[req_data]
 VplgL=VplgL[req_data]
 Current=Current[req_data]
@@ -156,19 +161,19 @@ print(highLabel)
 
 invalidChoice = True
 while invalidChoice:
-    # resChoice = str(raw_input("[low] or [high] or [tri]? "))
-    resChoice = str(raw_input("[low] or [high]? "))
+	# resChoice = str(raw_input("[low] or [high] or [tri]? "))
+	resChoice = str(raw_input("[low] or [high]? "))
 
-    if resChoice == 'low' or resChoice == 'high':
-        invalidChoice = False
-        if resChoice == 'high':
-            triangleFitting = True
-            # gateFitting = True
-        else:
-            triangleFitting = False
-            # gateFitting = True
-    else:
-        print('Invalid entry. Try again.')
+	if resChoice == 'low' or resChoice == 'high':
+		invalidChoice = False
+		if resChoice == 'high':
+			triangleFitting = True
+			# gateFitting = True
+		else:
+			triangleFitting = False
+			# gateFitting = True
+	else:
+		print('Invalid entry. Try again.')
 
 print('Fit resolution selected: {0}'.format(resChoice))
 
@@ -178,74 +183,74 @@ boundary_thickness_factor=1.0
 print('\nDo you want to change the current threshold factor from its preset of {0}? \n'.format(curr_thresh_factor))
 invalidChoice = True
 while invalidChoice:
-    thresChoice = str(raw_input('[yes] or [no]? '))
+	thresChoice = str(raw_input('[yes] or [no]? '))
 
-    if thresChoice == 'yes' or thresChoice == 'no':
-        invalidChoice = False
-        if thresChoice == 'yes':
-            okChoice = True
-            while okChoice:
-                okChoice = False
-                try:
-                    newThreshold = float(raw_input("Current threshold factor: "))
-                except ValueError as e:
-                    print('Current threshold factor must be a number.\n')
-                    okChoice = True
-            curr_thresh_factor = newThreshold
-        else:
-            print('Current threshold factor: {0}'.format(curr_thresh_factor))
-    else:
-        print('Invalid entry. Try again.')
+	if thresChoice == 'yes' or thresChoice == 'no':
+		invalidChoice = False
+		if thresChoice == 'yes':
+			okChoice = True
+			while okChoice:
+				okChoice = False
+				try:
+					newThreshold = float(raw_input("Current threshold factor: "))
+				except ValueError as e:
+					print('Current threshold factor must be a number.\n')
+					okChoice = True
+			curr_thresh_factor = newThreshold
+		else:
+			print('Current threshold factor: {0}'.format(curr_thresh_factor))
+	else:
+		print('Invalid entry. Try again.')
 
 
 print('\nDo you want to crop data range by entering min/max values for each gate?\n')
 
 invalidChoice = True
 while invalidChoice:
-    cropChoice = str(raw_input("[yes] or [no]? "))
+	cropChoice = str(raw_input("[yes] or [no]? "))
 
-    if cropChoice == 'yes' or cropChoice == 'no':
-        invalidChoice = False
-        if cropChoice == 'yes':
-            cropValues = True
-        else:
-            cropValues = False
-    else:
-        print('Invalid entry. Try again.')
+	if cropChoice == 'yes' or cropChoice == 'no':
+		invalidChoice = False
+		if cropChoice == 'yes':
+			cropValues = True
+		else:
+			cropValues = False
+	else:
+		print('Invalid entry. Try again.')
 
 if cropValues:
-    # Get sweep input
-    invalidCrop = True
-    while invalidCrop:
-        print('\nEnter intended crop for Vg1 (x-axis):')
-        initial1 = raw_input("Min: ")
-        final1 = raw_input("Max: ")
+	# Get sweep input
+	invalidCrop = True
+	while invalidCrop:
+		print('\nEnter intended crop for Vg1 (x-axis):')
+		initial1 = raw_input("Min: ")
+		final1 = raw_input("Max: ")
 
-        print('\nEnter intended crop for Vg2 (y-axis):')
-        initial2 = raw_input("Min: ")
-        final2 = raw_input("Max: ")
+		print('\nEnter intended crop for Vg2 (y-axis):')
+		initial2 = raw_input("Min: ")
+		final2 = raw_input("Max: ")
 
-        invalidCrop = False
-        try:
-            initial1 = float(initial1)
-            initial2 = float(initial2)
-            final1 = float(final1)
-            final2 = float(final2)
-        except ValueError as e:
-            print('\nCrop range input not valid input.\n')
-            invalidCrop = True
+		invalidCrop = False
+		try:
+			initial1 = float(initial1)
+			initial2 = float(initial2)
+			final1 = float(final1)
+			final2 = float(final2)
+		except ValueError as e:
+			print('\nCrop range input not valid input.\n')
+			invalidCrop = True
 
-    #manually cropping out data
-    req_data=np.argwhere((VplgR>=initial2)& (VplgR<=final2))
-    req_data=np.reshape(req_data,len(req_data))
-    VplgR=VplgR[req_data]
-    VplgL=VplgL[req_data]
-    Current=Current[req_data]
-    req_data=np.argwhere((VplgL>=initial1)&(VplgL<final1))
-    req_data=np.reshape(req_data,len(req_data))
-    VplgR=VplgR[req_data]
-    VplgL=VplgL[req_data]
-    Current=Current[req_data]
+	#manually cropping out data
+	req_data=np.argwhere((VplgR>=initial2)& (VplgR<=final2))
+	req_data=np.reshape(req_data,len(req_data))
+	VplgR=VplgR[req_data]
+	VplgL=VplgL[req_data]
+	Current=Current[req_data]
+	req_data=np.argwhere((VplgL>=initial1)&(VplgL<final1))
+	req_data=np.reshape(req_data,len(req_data))
+	VplgR=VplgR[req_data]
+	VplgL=VplgL[req_data]
+	Current=Current[req_data]
 
 
 #to plot put the data into a 2D grid.
@@ -314,20 +319,20 @@ print('\nDo you want to further crop by selecting vertices on plot?\n')
 
 invalidChoice = True
 while invalidChoice:
-    cropChoice = str(raw_input("[yes] or [no]? "))
+	cropChoice = str(raw_input("[yes] or [no]? "))
 
-    if cropChoice == 'yes' or cropChoice == 'no':
-        invalidChoice = False
-        if cropChoice == 'yes':
-            cropping = True
-        else:
-            cropping = False
-    else:
-        print('Invalid entry. Try again.')
+	if cropChoice == 'yes' or cropChoice == 'no':
+		invalidChoice = False
+		if cropChoice == 'yes':
+			cropping = True
+		else:
+			cropping = False
+	else:
+		print('Invalid entry. Try again.')
 
 if cropping:
-    #crop a part of the data. Takes in the four vertices
-    Z=crop(X,Y,Z)
+	#crop a part of the data. Takes in the four vertices
+	Z=crop(X,Y,Z)
 
 #find clusters using DBSCAN
 
@@ -337,6 +342,7 @@ if cropping:
 
 curr_filtered_coord, curr_filtered_coord_x, curr_filtered_coord_y, curr_filtered_2d,curr_filtered_1d= curr_thresh_filter(X,Y,Z,curr_thresh_factor)
 
+print('Filtered data with the set current threshold')
 #plot filtered current
 fig = plt.figure()
 plt.contourf(X, Y, curr_filtered_2d, 30, cmap=cm.coolwarm)
@@ -424,6 +430,9 @@ for r in range(0,len(cluster_labels)):
 C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1,fit_centroids=find_Cgs(cluster_centroids[final_clusters])
 # print("values C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1 are ",C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1)
 
+print("\nCentroids after fitting:")
+print(np.around(fit_centroids,decimals=3))
+
 print('\nExtracted gate capacitance terms: ')
 print('C_g1_d1: {0:.4e} F'.format(C_g1_d1))
 print('C_g2_d2: {0:.4e} F'.format(C_g2_d2))
@@ -434,17 +443,17 @@ print('C_g2_d1: {0:.4e} F'.format(C_g2_d1))
 
 # Setup a plot such that only the bottom spine is shown
 def setup(ax):
-    ax.spines['right'].set_color('none')
-    ax.spines['left'].set_color('none')
-    ax.yaxis.set_ticks_position('left')
-    ax.spines['top'].set_color('none')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.tick_params(which='major', width=1.00, length=5)
-    ax.tick_params(which='minor', width=0.75, length=2.5, labelsize=10)
-    # TODO: are these x and ylims specific to some data file?
-    ax.set_xlim(1.57,1.61)
-    ax.set_ylim(1.59,1.63)
-    ax.patch.set_alpha(0.0)
+	ax.spines['right'].set_color('none')
+	ax.spines['left'].set_color('none')
+	ax.yaxis.set_ticks_position('left')
+	ax.spines['top'].set_color('none')
+	ax.xaxis.set_ticks_position('bottom')
+	ax.tick_params(which='major', width=1.00, length=5)
+	ax.tick_params(which='minor', width=0.75, length=2.5, labelsize=10)
+	# TODO: are these x and ylims specific to some data file?
+	ax.set_xlim(1.57,1.61)
+	ax.set_ylim(1.59,1.63)
+	ax.patch.set_alpha(0.0)
 
 fig = plt.figure()
 '''
@@ -475,99 +484,97 @@ plt.show()
 # Bias triangle fitting if high resolution selected by user
 if triangleFitting:
 
-    print('\nDo you want to change the boundary thickness factor from its preset of {0}? \n'.format(boundary_thickness_factor))
-    invalidChoice = True
-    while invalidChoice:
-        boundaryChoice = str(raw_input('[yes] or [no]? '))
+	print('\nDo you want to change the boundary thickness factor from its preset of {0}? \n'.format(boundary_thickness_factor))
+	invalidChoice = True
+	while invalidChoice:
+		boundaryChoice = str(raw_input('[yes] or [no]? '))
 
-        if boundaryChoice == 'yes' or boundaryChoice == 'no':
-            invalidChoice = False
-            if boundaryChoice == 'yes':
-                okChoice = True
-                while okChoice:
-                    okChoice = False
-                    try:
-                        newBoundary = float(raw_input('Boundary thickness factor: '))
-                    except ValueError as e:
-                        print('Boundary thickness factor must be a number.\n')
-                        okChoice = True
-                boundary_thickness_factor = newBoundary
-            else:
-                print('Boundary thickness factor: {0}'.format(curr_thresh_factor))
-        else:
-            print('Invalid entry. Try again.')
+		if boundaryChoice == 'yes' or boundaryChoice == 'no':
+			invalidChoice = False
+			if boundaryChoice == 'yes':
+				okChoice = True
+				while okChoice:
+					okChoice = False
+					try:
+						newBoundary = float(raw_input('Boundary thickness factor: '))
+					except ValueError as e:
+						print('Boundary thickness factor must be a number.\n')
+						okChoice = True
+				boundary_thickness_factor = newBoundary
+			else:
+				print('Boundary thickness factor: {0}'.format(curr_thresh_factor))
+		else:
+			print('Invalid entry. Try again.')
 
-    print('\n fitting triangles')
-    #fit triangles to the base cluster- gives 5 vertices and slopes,intercepts of lines.
-    Use_clear_bulk=True
-    vertices,lines,guess_vertices= fit_lines(x[0],y[0],resolution,boundary_thickness_factor,Use_clear_bulk)
-    #plot the fit on initial data
-    plt.figure()
-    plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
-    plt.plot([vertices[0][0],vertices[1][0],vertices[2][0],vertices[3][0],vertices[4][0],vertices[0][0]],[vertices[0][1],vertices[1][1],vertices[2][1],vertices[3][1],vertices[4][1],vertices[0][1]],'g-')
-    sides=(max(x[0])-min(x[0]))*0.5
-    plt.axis([min(x[0])-sides,max(x[0])+sides,min(y[0])-sides,max(y[0])+sides])
-    plt.show()
+	print('\n fitting triangles')
+	#fit triangles to the base cluster- gives 5 vertices and slopes,intercepts of lines.
+	Use_clear_bulk=True
+	vertices,lines,guess_vertices= fit_lines(x[0],y[0],resolution,boundary_thickness_factor,Use_clear_bulk)
+	#plot the fit on initial data
+	plt.figure()
+	plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
+	plt.plot([vertices[0][0],vertices[1][0],vertices[2][0],vertices[3][0],vertices[4][0],vertices[0][0]],[vertices[0][1],vertices[1][1],vertices[2][1],vertices[3][1],vertices[4][1],vertices[0][1]],'g-')
+	sides=(max(x[0])-min(x[0]))*0.5
+	plt.axis([min(x[0])-sides,max(x[0])+sides,min(y[0])-sides,max(y[0])+sides])
+	plt.show()
 
-    """
-    #fit_triangles using all 4 clusters
-    vertices_4,lines_4,dx1,dy1,dx2,dy2= fit_lines_4triangles(x[0],y[0],x[1],y[1],x[2],y[2],x[3],y[3],cluster_centroids[final_clusters],resolution,boundary_thickness_factor,Use_clear_bulk,guess_vertices)
-    plt.figure()
-    plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
-    x=np.array([vertices_4[0][0],vertices_4[1][0],vertices_4[2][0],vertices_4[3][0],vertices_4[4][0],vertices_4[0][0]])
-    y=np.array([vertices_4[0][1],vertices_4[1][1],vertices_4[2][1],vertices_4[3][1],vertices_4[4][1],vertices_4[0][1]])
-    x_1=x+np.tile(dx1,(6,))
-    y_1=y+np.tile(dy1,(6,))
-    x_2=x+np.tile(dx2,(6,))
-    y_2=y+np.tile(dy2,(6,))
-    x_3=x+np.tile(dx2+dx1,(6,))
-    y_3=y+np.tile(dy2+dy1,(6,))
-    plt.plot(x_3,y_3,'b-',x,y,'b-',x_2,y_2,'b-',x_1,y_1,'b-')
-    plt.show()
-    """
+	"""
+	#fit_triangles using all 4 clusters
+	vertices_4,lines_4,dx1,dy1,dx2,dy2= fit_lines_4triangles(x[0],y[0],x[1],y[1],x[2],y[2],x[3],y[3],cluster_centroids[final_clusters],resolution,boundary_thickness_factor,Use_clear_bulk,guess_vertices)
+	plt.figure()
+	plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
+	x=np.array([vertices_4[0][0],vertices_4[1][0],vertices_4[2][0],vertices_4[3][0],vertices_4[4][0],vertices_4[0][0]])
+	y=np.array([vertices_4[0][1],vertices_4[1][1],vertices_4[2][1],vertices_4[3][1],vertices_4[4][1],vertices_4[0][1]])
+	x_1=x+np.tile(dx1,(6,))
+	y_1=y+np.tile(dy1,(6,))
+	x_2=x+np.tile(dx2,(6,))
+	y_2=y+np.tile(dy2,(6,))
+	x_3=x+np.tile(dx2+dx1,(6,))
+	y_3=y+np.tile(dy2+dy1,(6,))
+	plt.plot(x_3,y_3,'b-',x,y,'b-',x_2,y_2,'b-',x_1,y_1,'b-')
+	plt.show()
+	"""
 
-    #Find capacitance ratios C1/Cm and C2/Cm from triangles fit to the base cluster
-    #calculate Vgms
-    delta_Vgm1,delta_Vgm2= find_Vgms(lines,vertices)
-    C1_Cm,C2_Cm= find_Cratios(C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1,delta_Vgm1,delta_Vgm2)
-    Cm = 1
-    print("\nValues of C1/Cm and C2/Cm are: ")
-    print('C1_Cm: {0:.4e}'.format(C1_Cm))
-    print('C2_Cm: {0:.4e}'.format(C2_Cm))
+	#Find capacitance ratios C1/Cm and C2/Cm from triangles fit to the base cluster
+	#calculate Vgms
+	delta_Vgm1,delta_Vgm2= find_Vgms(lines,vertices)
+	C1_Cm,C2_Cm= find_Cratios(C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1,delta_Vgm1,delta_Vgm2)
+	Cm = 1
+	print("\nValues of C1/Cm and C2/Cm are: ")
+	print('C1_Cm: {0:.4e}'.format(C1_Cm))
+	print('C2_Cm: {0:.4e}'.format(C2_Cm))
 
-    #find values of dVg1 and dVg2
-    # dVg1,dVg2= find_dVgs(vertices,lines)
-    """
-    # use lever arm ,gate and cross gate capacitances, capacitance ratios C1_Cm and C2_Cm and calculates charging energies
-    #Ec1 and Ec2 and electrostatic coupling energy Ecm
-    #Using dot= 1 (for dot1) or 2(for dot2) choose which lever arm is to be used in the calculations
-    dot=1
-    lever_arm=1.0
-    Ec1,Ec2,Ecm= find_Ecs(lever_arm, dot, C1_Cm,C2_Cm,C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1)
-    print("Ec1,Ec2,Ecm are",Ec1,Ec2,Ecm)
-    """
-    # Write csv of all terms
-    raw_input('Press enter to save capacitances to CSV')
+	#find values of dVg1 and dVg2
+	# dVg1,dVg2= find_dVgs(vertices,lines)
+	"""
+	# use lever arm ,gate and cross gate capacitances, capacitance ratios C1_Cm and C2_Cm and calculates charging energies
+	#Ec1 and Ec2 and electrostatic coupling energy Ecm
+	#Using dot= 1 (for dot1) or 2(for dot2) choose which lever arm is to be used in the calculations
+	dot=1
+	lever_arm=1.0
+	Ec1,Ec2,Ecm= find_Ecs(lever_arm, dot, C1_Cm,C2_Cm,C_g1_d1,C_g2_d2,C_g1_d2,C_g2_d1)
+	print("Ec1,Ec2,Ecm are",Ec1,Ec2,Ecm)
+	"""
+	# Write csv of all terms
+	raw_input('Press enter to save capacitances to CSV')
 
-    outputFilename = get_save_path('*.csv')
+	outputFilename = get_save_path('*.csv')
 
-    with open_csv(outputFilename, 'w') as outputFile:
-    # with open(outputFilename, mode='w', newline='') as outputFile:
-        fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+	with open_csv(outputFilename, 'w') as outputFile:
+		fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2', 'C1', 'C2', 'Cm'])
-        fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2, C1_Cm, C2_Cm, Cm])
+		fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2', 'C1', 'C2', 'Cm'])
+		fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2, C1_Cm, C2_Cm, Cm])
 
 
 else:
-    # Write csv of only gate capacitance
-    raw_input('Press enter to save capacitances to CSV')
+	# Write csv of only gate capacitance
+	raw_input('Press enter to save capacitances to CSV')
 
-    outputFilename = get_save_path('*.csv')
+	outputFilename = get_save_path('*.csv')
 
-    with open_csv(outputFilename, 'w') as outputFile:
-    # with open(outputFilename, mode='w', newline='') as outputFile:
-        fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+	with open_csv(outputFilename, 'w') as outputFile:
+		fileWriter = csv.writer(outputFile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2'])
-        fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2])
+		fileWriter.writerow(['C_g1_d1', 'C_g2_d2', 'C_g2_d1', 'C_g1_d2'])
+		fileWriter.writerow([C_g1_d1, C_g2_d2, C_g2_d1, C_g1_d2])
