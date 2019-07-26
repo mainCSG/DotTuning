@@ -53,58 +53,69 @@ print('\nFrom the CSV\'s headers please type which correspond to the gate voltag
 columnNames = data.columns
 
 for i,col in enumerate(data.columns):
-    print(i,col)
+    print('{0} : {1}'.format(i,col))
 
 invalidColumnName = True
 while invalidColumnName:
-    gateNumber1 = int(raw_input('\nType gate 1 voltage column number: '))
-    gateNumber2 = int(raw_input('Type gate 2 voltage column number: '))
-    currentNumber = int(raw_input('Type current column number: '))
 
-    gateName1=data.columns[gateNumber1]
-    gateName2=data.columns[gateNumber2]
-    currentName=data.columns[currentNumber]
+	validNumbers = True
+	try:
+		gateName1Num = int(raw_input('\nType gate 1 voltage column number: '))
+		gateName2Num = int(raw_input('Type gate 2 voltage column number: '))
+		currentNameNum = int(raw_input('Type current column number: '))
+	except ValueError as e:
+		print('Non number entered.')
+		validNumbers = False
 
-    selection = [data.columns[gateNumber1],data.columns[gateNumber2], data.columns[currentNumber]]
+	if validNumbers and max(gateName1Num,gateName2Num,currentNameNum) < len(data.columns):
+		gateName1 = data.columns[gateName1Num]
+		gateName2 = data.columns[gateName2Num]
+		currentName = data.columns[currentNameNum]
 
-    if len(set(selection) & set(columnNames)) == 3:
-        invalidColumnName = False
-    else:
-        diffNames = set(selection).difference(set(columnNames))
-        print('Invalid column name(s) entered: {0}'.format(diffNames))
+		selection = [gateName1, gateName2, currentName]
 
+		if len(set(selection) & set(columnNames)) == 3:
+			invalidColumnName = False
+		else:
+			diffNames = set(selection).difference(set(columnNames))
+			print('Invalid column name(s) entered: {0}'.format(diffNames))
+	else:
+		print('Invalid selection, Try again.')
+
+# Get data from column names
 VplgR=data[gateName1].values
 VplgL=data[gateName2].values
 Current=data[currentName].values
 
 print('\n How many outer loops were swept?')
 outer_loops=int(raw_input("Enter a number:"))
-outer_loop_indices=np.zeros(outer_loops)
-outer_loop_values=np.zeros(outer_loops)
+outer_loop_indices= [0]*outer_loops
+outer_loop_values = [0]*outer_loops
 
-invalidColumnName = True
+
 if outer_loops==0:
-    invalidColumnName= False
-while invalidColumnName:
-    outer_loop_indices[0]=int(raw_input("Enter an outer loop column number:"))
-    print(np.unique(data[data.columns[outer_loop_indices[0]]].values))
-    outer_loop_values[0]=float(raw_input("Choose a value:"))
+	invalidOuterName= False
+else:
+	invalidOuterName = True
+while invalidOuterName:
+	outer_loop_indices[0]=int(raw_input("Enter an outer loop column number:"))
+	print(np.unique(data[data.columns[outer_loop_indices[0]]].values))
+	outer_loop_values[0]=float(raw_input("Choose a value:"))
 
-    for a in range (1,outer_loops):
-        outer_loop_indices[a]=int(raw_input("Enter next outer loop column number:"))
-        print(np.unique(data[data.columns[outer_loop_indices[a]]].values))
-        outer_loop_values[a]=float(raw_input("Choose a value:"))
+	for a in range (1,outer_loops):
+		outer_loop_indices[a]=int(raw_input("Enter next outer loop column number:"))
+		print(np.unique(data[data.columns[outer_loop_indices[a]]].values))
+		outer_loop_values[a]=float(raw_input("Choose a value:"))
 
-    outer_loop_indices=outer_loop_indices.astype(int)
-    selection=[]
-    for a in range (0,outer_loops):	
-    	selection += [data.columns[outer_loop_indices[a]]]
-   
-    if len(set(selection) & set(columnNames)) == outer_loops:
-        invalidColumnName = False
-    else:
-        diffNames = set(selection).difference(set(columnNames))
-        print('Invalid column name(s) entered: {0}'.format(diffNames))
+	selection=[]
+	for a in range (0,outer_loops):
+		selection += [data.columns[outer_loop_indices[a]]]
+
+	if len(set(selection) & set(columnNames)) == outer_loops:
+		invalidOuterName = False
+	else:
+		diffNames = set(selection).difference(set(columnNames))
+		print('Invalid column name(s) entered: {0}'.format(diffNames))
 
 #filter out data based on the values for outerloops set
 req_data=np.arange(len(Current))

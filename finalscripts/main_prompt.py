@@ -76,9 +76,6 @@ for i,col in enumerate(data.columns):
 
 invalidColumnName = True
 while invalidColumnName:
-	# gateName1 = str(raw_input('\nType gate 1 voltage column name: '))
-	# gateName2 = str(raw_input('Type gate 2 voltage column name: '))
-	# currentName = str(raw_input('Type current column name: '))
 
 	validNumbers = True
 	try:
@@ -111,8 +108,8 @@ Current=data[currentName].values
 
 print('\n How many outer loops were swept?')
 outer_loops=int(raw_input("Enter a number:"))
-outer_loop_indices=np.zeros(outer_loops)
-outer_loop_values=np.zeros(outer_loops)
+outer_loop_indices= [0]*outer_loops
+outer_loop_values = [0]*outer_loops
 
 
 if outer_loops==0:
@@ -120,16 +117,15 @@ if outer_loops==0:
 else:
 	invalidOuterName = True
 while invalidOuterName:
-	outer_loop_indices[0]=int(raw_input("Enter an outer loop column number:"))
+	outer_loop_indices[0]=int(raw_input("Enter an outer loop column number: "))
 	print(np.unique(data[data.columns[outer_loop_indices[0]]].values))
-	outer_loop_values[0]=float(raw_input("Choose a value:"))
+	outer_loop_values[0]=float(raw_input("Choose a value: "))
 
 	for a in range (1,outer_loops):
-		outer_loop_indices[a]=int(raw_input("Enter next outer loop column number:"))
+		outer_loop_indices[a]=int(raw_input("Enter next outer loop column number: "))
 		print(np.unique(data[data.columns[outer_loop_indices[a]]].values))
-		outer_loop_values[a]=float(raw_input("Choose a value:"))
+		outer_loop_values[a]=float(raw_input("Choose a value: "))
 
-	outer_loop_indices=outer_loop_indices.astype(int)
 	selection=[]
 	for a in range (0,outer_loops):
 		selection += [data.columns[outer_loop_indices[a]]]
@@ -222,11 +218,13 @@ if cropValues:
 	# Get sweep input
 	invalidCrop = True
 	while invalidCrop:
-		print('\nEnter intended crop for Vg1 (x-axis):')
+
+
+		print('\nEnter intended crop for Vg1 (x-axis) between {0} and {1}:'.format(min(VplgL),max(VplgL)))
 		initial1 = raw_input("Min: ")
 		final1 = raw_input("Max: ")
 
-		print('\nEnter intended crop for Vg2 (y-axis):')
+		print('\nEnter intended crop for Vg2 (x-axis) between {0} and {1}:'.format(min(VplgR),max(VplgR)))
 		initial2 = raw_input("Min: ")
 		final2 = raw_input("Max: ")
 
@@ -239,6 +237,11 @@ if cropValues:
 		except ValueError as e:
 			print('\nCrop range input not valid input.\n')
 			invalidCrop = True
+
+		if initial1 < min(VplgL) or final1 > max(VplgL) or initial2 < min(VplgR) or final2 > max(VplgR):
+			print('\nEntered crop range is outside of available range. Try again.')
+			invalidCrop = True
+
 
 	#manually cropping out data
 	req_data=np.argwhere((VplgR>=initial2)& (VplgR<=final2))
@@ -506,7 +509,7 @@ if triangleFitting:
 		else:
 			print('Invalid entry. Try again.')
 
-	print('\n fitting triangles')
+	print('\nFitting triangles')
 	#fit triangles to the base cluster- gives 5 vertices and slopes,intercepts of lines.
 	Use_clear_bulk=True
 	vertices,lines,guess_vertices= fit_lines(x[0],y[0],resolution,boundary_thickness_factor,Use_clear_bulk)
