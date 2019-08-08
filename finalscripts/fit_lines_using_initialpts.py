@@ -168,8 +168,15 @@ def fit_lines(x,y,resolution,boundary_thickness_factor,Use_clear_bulk):
         plt.axis('off')
         plt.show()
 
+        # Get input for cropping and display choices
         fig = plt.figure()
         coll =plt.scatter(boundary_x,boundary_y, c=[1]*len(boundary_x),picker=5)
+        min_x=min(boundary_x)
+        max_x=max(boundary_x)
+        min_y=min(boundary_y)
+        max_y=max(boundary_y)
+        sides=(max_x-min_x)*0.5
+        plt.axis([min_x-sides,max_x+sides,min_y-sides,max_y+sides])
         fig.canvas.mpl_connect('pick_event', onpick)
         plt.show()
 

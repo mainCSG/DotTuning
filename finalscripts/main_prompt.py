@@ -161,13 +161,32 @@ while invalidOuterName:
 		# print('Invalid column name(s) entered: {0}'.format(diffNames))
 		print('Repeat outer loop columns selected. Try again.')
 
+
+#to plot put the data into a 2D grid.
+#set x,y,z according to the data
+# In the measurement when a 2D sweep is done, x is the variable of outer sweep loop. y is the variable of inner sweep loop.
+#find which belongs to outer loop and which is inner loop
+if VplgR[0]==VplgR[1] and VplgL[0]!=VplgL[1]  :
+	#VplgR is outer loop, VplgL is inner loop
+	outer= VplgR
+	inner= VplgL
+
+elif VplgL[0]==VplgL[1] and VplgR[0]!=VplgR[1]  :
+	#VplgL is outer loop, VplgR is inner loop
+	outer= VplgL
+	inner= VplgR
+else :
+	print("Data is not arranged properly. There is no clear outer and inner loop in the sweep")
+
 #filter out data based on the values for outerloops set
 req_data=np.arange(len(Current))
 for b in range(0,outer_loops):
 	data_loop=np.argwhere(data[data.columns[outer_loop_indices[b]]].values==outer_loop_values[b])
 	req_data=np.intersect1d(req_data,np.reshape(data_loop,len(data_loop)),assume_unique=True)
-VplgR=VplgR[req_data]
-VplgL=VplgL[req_data]
+# VplgR=VplgR[req_data]
+# VplgL=VplgL[req_data]
+outer=outer[req_data]
+inner=inner[req_data]
 Current=Current[req_data]
 
 print('\nDo you have low resolution or high resolution data?')
@@ -239,17 +258,17 @@ while invalidChoice:
 	else:
 		print('Invalid entry. Try again.')
 
+
 if cropValues:
 	# Get sweep input
 	invalidCrop = True
 	while invalidCrop:
 
-
-		print('\nEnter intended crop for Vg1 (x-axis) between {0} and {1}:'.format(min(VplgL),max(VplgL)))
+		print('\nEnter intended crop for first gate(outer/x) between {0} and {1}:'.format(min(outer),max(outer)))
 		initial1 = raw_input("Min: ")
 		final1 = raw_input("Max: ")
 
-		print('\nEnter intended crop for Vg2 (x-axis) between {0} and {1}:'.format(min(VplgR),max(VplgR)))
+		print('\nEnter intended crop for second gate (inner/y) between {0} and {1}:'.format(min(inner),max(inner)))
 		initial2 = raw_input("Min: ")
 		final2 = raw_input("Max: ")
 
@@ -263,40 +282,23 @@ if cropValues:
 			print('\nCrop range input not valid input.\n')
 			invalidCrop = True
 
-		if initial1 < min(VplgL) or final1 > max(VplgL) or initial2 < min(VplgR) or final2 > max(VplgR):
+		if initial1 < min(outer) or final1 > max(outer) or initial2 < min(inner) or final2 > max(inner):
 			print('\nEntered crop range is outside of available range. Try again.')
 			invalidCrop = True
 
 
 	#manually cropping out data
-	req_data=np.argwhere((VplgR>=initial2)& (VplgR<=final2))
+	req_data=np.argwhere((inner>=initial2)& (inner<=final2))
 	req_data=np.reshape(req_data,len(req_data))
-	VplgR=VplgR[req_data]
-	VplgL=VplgL[req_data]
+	inner=inner[req_data]
+	outer=outer[req_data]
 	Current=Current[req_data]
-	req_data=np.argwhere((VplgL>=initial1)&(VplgL<final1))
+	req_data=np.argwhere((outer>=initial1)&(outer<final1))
 	req_data=np.reshape(req_data,len(req_data))
-	VplgR=VplgR[req_data]
-	VplgL=VplgL[req_data]
+	inner=inner[req_data]
+	outer=outer[req_data]
 	Current=Current[req_data]
 
-
-#to plot put the data into a 2D grid.
-#set x,y,z according to the data
-# In the measurement when a 2D sweep is done, x is the variable of outer sweep loop. y is the variable of inner sweep loop.
-#find which belongs to outer loop and which is inner loop
-if VplgR[0]==VplgR[1] and VplgL[0]!=VplgL[1]  :
-	#VplgR is outer loop, VplgL is inner loop
-	outer= VplgR
-	inner= VplgL
-
-elif VplgL[0]==VplgL[1] and VplgR[0]!=VplgR[1]  :
-	#VplgL is outer loop, VplgR is inner loop
-	outer= VplgL
-	inner= VplgR
-
-else :
-	print("Data is not arranged properly. There is no clear outer and inner loop in the sweep")
 
 #From the data VplgR is x, VplgL is y.
 x= outer
@@ -335,11 +337,11 @@ Z_initial=Z
 
 #plot total data as heat map
 fig = plt.figure()
-plt.contourf(X, Y, Z, 30, cmap=cm.coolwarm)
+plt.contourf(X, Y, Z, 30, cmap=cm.plasma)
 # plt.axis('equal')
 # plt.axis([1.57, 1.61, 1.59, 1.63])
 # ax = fig.add_subplot(111, projection='3d')
-# ax.plot_surface(X, Y, Z, cmap=cm.coolwarm)
+# ax.plot_surface(X, Y, Z, cmap=cm.plasma)
 plt.show()
 
 
@@ -373,7 +375,7 @@ curr_filtered_coord, curr_filtered_coord_x, curr_filtered_coord_y, curr_filtered
 print('Filtered data with the set current threshold')
 #plot filtered current
 fig = plt.figure()
-plt.contourf(X, Y, curr_filtered_2d, 30, cmap=cm.coolwarm)
+plt.contourf(X, Y, curr_filtered_2d, 30, cmap=cm.plasma)
 plt.show()
 
 # Cluster the dataset `D` using the DBSCAN algorithm.
@@ -496,7 +498,7 @@ ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.005))
 ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x}"))
 '''
 #data for the plot
-plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
+plt.contourf(X, Y, Z_initial, 30, cmap=cm.plasma)
 plt.colorbar()
 # plt.plot([cluster_centroids[final_clusters][0][0],cluster_centroids[final_clusters][1][0],cluster_centroids[final_clusters][3][0],cluster_centroids[final_clusters][2][0],cluster_centroids[final_clusters][0][0]],[cluster_centroids[final_clusters][0][1],cluster_centroids[final_clusters][1][1],cluster_centroids[final_clusters][3][1],cluster_centroids[final_clusters][2][1],cluster_centroids[final_clusters][0][1]],'go',markersize=8)
 plt.plot([fit_centroids[0][0],fit_centroids[1][0],fit_centroids[3][0],fit_centroids[2][0],fit_centroids[0][0]],[fit_centroids[0][1],fit_centroids[1][1],fit_centroids[3][1],fit_centroids[2][1],fit_centroids[0][1]],'b--')
@@ -540,7 +542,7 @@ if triangleFitting:
 	vertices,lines,guess_vertices= fit_lines(x[0],y[0],resolution,boundary_thickness_factor,Use_clear_bulk)
 	#plot the fit on initial data
 	plt.figure()
-	plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
+	plt.contourf(X, Y, Z_initial, 30, cmap=cm.plasma)
 	plt.plot([vertices[0][0],vertices[1][0],vertices[2][0],vertices[3][0],vertices[4][0],vertices[0][0]],[vertices[0][1],vertices[1][1],vertices[2][1],vertices[3][1],vertices[4][1],vertices[0][1]],'g-')
 	sides=(max(x[0])-min(x[0]))*0.5
 	plt.axis([min(x[0])-sides,max(x[0])+sides,min(y[0])-sides,max(y[0])+sides])
@@ -550,7 +552,7 @@ if triangleFitting:
 	#fit_triangles using all 4 clusters
 	vertices_4,lines_4,dx1,dy1,dx2,dy2= fit_lines_4triangles(x[0],y[0],x[1],y[1],x[2],y[2],x[3],y[3],cluster_centroids[final_clusters],resolution,boundary_thickness_factor,Use_clear_bulk,guess_vertices)
 	plt.figure()
-	plt.contourf(X, Y, Z_initial, 30, cmap=cm.coolwarm)
+	plt.contourf(X, Y, Z_initial, 30, cmap=cm.plasma)
 	x=np.array([vertices_4[0][0],vertices_4[1][0],vertices_4[2][0],vertices_4[3][0],vertices_4[4][0],vertices_4[0][0]])
 	y=np.array([vertices_4[0][1],vertices_4[1][1],vertices_4[2][1],vertices_4[3][1],vertices_4[4][1],vertices_4[0][1]])
 	x_1=x+np.tile(dx1,(6,))
